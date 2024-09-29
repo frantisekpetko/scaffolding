@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 var EntitygenService_1;
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntitygenService = void 0;
 const paths_service_1 = require("./paths/paths.service");
@@ -706,8 +707,7 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
 };
 EntitygenService = EntitygenService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [paths_service_1.PathsService,
-        typeorm_1.DataSource])
+    __metadata("design:paramtypes", [paths_service_1.PathsService, typeof (_a = typeof typeorm_1.DataSource !== "undefined" && typeorm_1.DataSource) === "function" ? _a : Object])
 ], EntitygenService);
 exports.EntitygenService = EntitygenService;
 //# sourceMappingURL=entitygen.service.js.map

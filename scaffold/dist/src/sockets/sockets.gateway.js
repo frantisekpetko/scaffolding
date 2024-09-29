@@ -9,6 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var SocketsGateway_1;
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketsGateway = void 0;
 const entitygen_service_1 = require("./../entitygen/entitygen.service");
@@ -47,7 +48,7 @@ __decorate([
 ], SocketsGateway.prototype, "handleMessage", null);
 __decorate([
     (0, websockets_1.WebSocketServer)(),
-    __metadata("design:type", socket_io_1.Server)
+    __metadata("design:type", typeof (_a = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _a : Object)
 ], SocketsGateway, "wss", void 0);
 SocketsGateway = SocketsGateway_1 = __decorate([
     (0, common_1.Injectable)(),

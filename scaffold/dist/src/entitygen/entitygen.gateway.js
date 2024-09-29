@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 var EntitygenGateway_1;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntitygenGateway = void 0;
 const entitygen_service_1 = require("./entitygen.service");
@@ -134,12 +135,12 @@ let EntitygenGateway = EntitygenGateway_1 = class EntitygenGateway {
 };
 __decorate([
     (0, websockets_1.WebSocketServer)(),
-    __metadata("design:type", socket_io_1.Server)
+    __metadata("design:type", typeof (_b = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _b : Object)
 ], EntitygenGateway.prototype, "wss", void 0);
 __decorate([
     (0, websockets_1.SubscribeMessage)('entities'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [socket_io_1.Socket]),
+    __metadata("design:paramtypes", [typeof (_c = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _c : Object]),
     __metadata("design:returntype", Promise)
 ], EntitygenGateway.prototype, "handleEntitiesMessage", null);
 __decorate([
@@ -160,8 +161,7 @@ EntitygenGateway = EntitygenGateway_1 = __decorate([
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [entitygen_service_1.EntitygenService,
-        paths_service_1.PathsService,
-        typeorm_1.DataSource])
+        paths_service_1.PathsService, typeof (_a = typeof typeorm_1.DataSource !== "undefined" && typeorm_1.DataSource) === "function" ? _a : Object])
 ], EntitygenGateway);
 exports.EntitygenGateway = EntitygenGateway;
 //# sourceMappingURL=entitygen.gateway.js.map

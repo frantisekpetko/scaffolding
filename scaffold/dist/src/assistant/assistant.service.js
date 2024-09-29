@@ -35,6 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 var AssistantService_1;
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssistantService = void 0;
 const fs_1 = __importStar(require("fs"));
@@ -241,8 +242,7 @@ let AssistantService = AssistantService_1 = class AssistantService {
 AssistantService = AssistantService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [entitygen_service_1.EntitygenService,
-        paths_service_1.PathsService,
-        typeorm_1.DataSource])
+        paths_service_1.PathsService, typeof (_a = typeof typeorm_1.DataSource !== "undefined" && typeorm_1.DataSource) === "function" ? _a : Object])
 ], AssistantService);
 exports.AssistantService = AssistantService;
 //# sourceMappingURL=assistant.service.js.map
