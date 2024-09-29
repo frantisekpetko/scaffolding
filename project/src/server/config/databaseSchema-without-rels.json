@@ -1,0 +1,352 @@
+[
+    {
+        "name": "Address",
+        "columns": [
+            {
+                "nameOfColumn": "name",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "street",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "city",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "postalCode",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "state",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "region",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "telephone",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            }
+        ],
+        "relationships": [
+        ]
+    },
+    {
+        "name": "Admin",
+        "columns": [
+            {
+                "nameOfColumn": "name",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "password",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "text"
+            },
+            {
+                "nameOfColumn": "superadmin",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "boolean"
+            }
+        ],
+        "relationships": [
+        ]
+    },
+    {
+        "name": "Category",
+        "columns": [
+            {
+                "nameOfColumn": "title",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "productCount",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "parentId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "adminId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            }
+        ],
+        "relationships": [
+        ]
+    },
+    {
+        "name": "Customer",
+        "columns": [
+            {
+                "nameOfColumn": "name",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "email",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "password",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "authStatus",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "bannedAt",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "datetime"
+            },
+            {
+                "nameOfColumn": "addressId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            }
+        ],
+        "relationships": [
+        ]
+    },
+    {
+        "name": "Image",
+        "columns": [
+            {
+                "nameOfColumn": "name",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "path",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "productId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            }
+        ],
+        "relationships": [
+        ]
+    },
+    {
+        "name": "Order",
+        "columns": [
+            {
+                "nameOfColumn": "mailTypeOrder",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "transportType",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "paymentType",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "note",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "customerId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "addressId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            }
+        ],
+        "relationships": [
+        ]
+    },
+    {
+        "name": "OrderToProduct",
+        "columns": [
+            {
+                "nameOfColumn": "quantity",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "orderId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "productId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            }
+        ],
+        "relationships": [
+        ]
+    },
+    {
+        "name": "Product",
+        "columns": [
+            {
+                "nameOfColumn": "name",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "varchar"
+            },
+            {
+                "nameOfColumn": "title",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "description",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "stockQuantity",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "price",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "priceVat",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "vat",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "discount",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "adminId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            },
+            {
+                "nameOfColumn": "categoryId",
+                "notNull": true,
+                "unique": false,
+                "index": false,
+                "datatype": "integer"
+            }
+        ],
+        "relationships": [
+        ]
+    }
+]

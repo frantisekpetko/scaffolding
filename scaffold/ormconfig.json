@@ -1,0 +1,21 @@
+{
+    "type": "sqlite",
+    "database": "../project/data/database.sqlite",
+    "logging": true,
+    "autoLoadEntities": true,
+    "synchronize": true,
+    "entities": [
+        "../project/dist/**/*.entity.js"
+    ],
+    "migrations": [
+        "../project/dist/**/*..js"
+    ],
+    "subscribers": [
+        "../project/src/subscriber/**/*.ts"
+    ],
+    "cli": {
+        "entitiesDir": "../project/src/entity",
+        "migrationsDir": "../project/src/migration",
+        "subscribersDir": "../project/src/subscriber"
+    }
+}

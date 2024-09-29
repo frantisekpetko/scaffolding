@@ -1,0 +1,65 @@
+"table_schema","table_name","column_name","data_type","ordinal_position"
+"public","admin","id","bigint",1
+"public","admin","name","character varying",2
+"public","admin","password","text",3
+"public","admin","superadmin","boolean",4
+"public","admin","createdAt","timestamp without time zone",5
+"public","admin","updatedAt","timestamp without time zone",6
+"public","category","id","bigint",1
+"public","category","title","character varying",2
+"public","category","productCount","integer",3
+"public","category","parentId","integer",4
+"public","category","adminId","bigint",5
+"public","category","createdAt","timestamp without time zone",6
+"public","category","updatedAt","timestamp without time zone",7
+"public","image","id","bigint",1
+"public","image","name","character varying",2
+"public","image","path","integer",3
+"public","image","productId","bigint",4
+"public","image","createdAt","timestamp without time zone",5
+"public","image","updatedAt","timestamp without time zone",6
+"public","product","id","bigint",1
+"public","product","name","character varying",2
+"public","product","title","integer",3
+"public","product","description","integer",4
+"public","product","stockQuantity","integer",5
+"public","product","price","integer",6
+"public","product","priceVat","integer",7
+"public","product","vat","integer",8
+"public","product","discount","integer",9
+"public","product","adminId","integer",10
+"public","product","categoryId","bigint",11
+"public","product","createdAt","timestamp without time zone",12
+"public","product","updatedAt","timestamp without time zone",13
+"public","order","id","bigint",1
+"public","order","mailTypeOrder","character varying",2
+"public","order","transportType","character varying",3
+"public","order","paymentType","character varying",4
+"public","order","note","character varying",5
+"public","order","customerId","bigint",6
+"public","order","addressId","bigint",7
+"public","order","createdAt","timestamp without time zone",8
+"public","order","updatedAt","timestamp without time zone",9
+"public","customer","id","bigint",1
+"public","customer","name","character varying",2
+"public","customer","email","character varying",3
+"public","customer","password","character varying",4
+"public","customer","authStatus","character varying",5
+"public","customer","bannedAt","timestamp without time zone",6
+"public","customer","addressId","bigint",7
+"public","customer","createdAt","timestamp without time zone",8
+"public","customer","updatedAt","timestamp without time zone",9
+"public","address","id","bigint",1
+"public","address","name","character varying",2
+"public","address","street","character varying",3
+"public","address","city","character varying",4
+"public","address","postalCode","character varying",5
+"public","address","state","character varying",6
+"public","address","region","character varying",7
+"public","address","telephone","character varying",8
+"public","address","createdAt","timestamp without time zone",9
+"public","address","updatedAt","timestamp without time zone",10
+"public","product_orders_order","productId","bigint",1
+"public","product_orders_order","orderId","bigint",2
+"public","order_products_product","orderId","bigint",1
+"public","order_products_product","productId","bigint",2
