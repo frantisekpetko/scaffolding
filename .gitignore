@@ -24,4 +24,4 @@ node_modules
 
 /backend.scaffold
 /frontend
-project/data/database.sqlite
+/project/data/database.sqlite
