@@ -1,0 +1,62 @@
+$glass: lighten(darkgoldenrod, 5%); //color goldenrod
+
+$glass-icon: darken(darkgoldenrod, 0.5);
+$gradient: white;
+$option: darkgoldenrod;
+
+.Select {
+    /* Reset */
+    appearance: none;
+    background: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg) no-repeat right 0.8em center / 1.4em, linear-gradient(to left, $glass-icon 3em, $glass 3em);
+    border: 0;
+    border-radius: 0.25em;
+    box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+    color: white;
+    cursor: pointer;
+    font: inherit;
+    height: 3em;
+    outline: 0;
+    //overflow-y: auto;
+    overflow-y: scroll;
+    padding: 0 4em 0 1em;
+    /* Personalize */
+    width: 14em;
+    /* <option> colors */
+    option {
+        background-color: $option;
+        color: inherit;
+        overflow-y: scroll;
+    }
+    /* Remove focus outline */
+    &:focus {
+        outline: none;
+    }
+
+    &:hover > option:hover {
+        background: goldenrod !important;
+    }
+
+    &:hover {
+        background-color: goldenrod !important;
+    }
+    /* Remove IE arrow */
+    &::-ms-expand {
+        display: none;
+    }
+    /* width */
+    &::-webkit-scrollbar {
+        width: 25px;
+    }
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: #555;
+    }
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: goldenrod;
+    }
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}

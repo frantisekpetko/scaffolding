@@ -1,0 +1,7 @@
+.Button {
+    font-size: 3em !important;
+}
+
+.Button:hover {
+    box-shadow: 5px 5px 5px lighten(silver, 0);
+}

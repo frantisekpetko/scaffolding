@@ -1,0 +1,75 @@
+@use '../../../node_modules/sass-mq/mq';
+
+.Navigation {
+	background-color: white;
+	-webkit-box-shadow:0px 2px 5px grey;
+	-moz-box-shadow:0px 2px 5px grey;
+	box-shadow: 0px 2px 5px grey;
+	flex-shrink: 0;
+	overflow: hidden;
+	position: fixed;
+	width: 100%;
+	z-index: 1000;
+}
+
+.Navigation a {
+	color: black;
+	cursor: pointer;
+	font-size: 17px;
+	padding: 10px 10px;
+	text-align: center;
+	text-decoration: none;
+
+}
+
+.Navigation span span a:hover {
+	background-color: #ddd;
+    color: black;
+}
+
+.ActiveLink {
+	background-color: goldenrod;
+	color: black;
+}
+
+
+
+@include mq.mq(mobile) {
+   	.Navigation .NavigationLinks {
+		display: none !important;
+	}
+
+	.Navigation .NavigationLogo {
+		justify-content: center !important;
+	}
+}
+
+@include mq.mq(tablet) {
+    .Navigation .NavigationLinks {
+		display: flex !important;
+	}
+
+	.Navigation .NavigationLogo {
+		justify-content: center !important;
+	}
+}
+
+@include mq.mq(desktop) {
+    .Navigation .NavigationLinks {
+		display: flex !important;
+	}
+
+	.Navigation .NavigationLogo {
+		justify-content: space-between !important;
+	}
+}
+
+@include mq.mq(wide) {
+    .Navigation .NavigationLinks {
+		display: flex !important;
+	}
+
+	.Navigation .NavigationLogo {
+		justify-content: space-between !important;
+	}
+}

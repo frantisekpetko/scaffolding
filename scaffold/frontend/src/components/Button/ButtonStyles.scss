@@ -1,0 +1,59 @@
+$goldenrodColor: #d6b04f;
+
+.Button {
+  -webkit-backface-visibility: hidden;
+  background: none;
+  border: none;
+  border: 3px solid;
+  color: inherit;
+  display: block;
+  font-size: 1rem;
+  margin: 1em;
+  margin: 0.6rem;
+  max-width: 250px;
+  min-width: 150px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  vertical-align: middle;
+  width: 230px;
+  z-index: 1;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.Button::before {
+  background: $goldenrodColor;
+  content: attr(data-text);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  -webkit-transform: translate3d(-100%, 0, 0);
+  transform: translate3d(-100%, 0, 0);
+  width: 100%;
+}
+
+.Button > span {
+  display: block;
+    font-size: 1rem;
+}
+
+.Button::before,
+.Button > span {
+  padding: 1em 0em;
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+  -webkit-transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
+  transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
+}
+
+.Button:hover::before {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+.Button:hover > span {
+  color: white;
+  -webkit-transform: translate3d(0, 100%, 0);
+  transform: translate3d(0, 100%, 0);
+}

@@ -1,0 +1,30 @@
+@use '../../../node_modules/sass-mq/mq';
+@import "../../variables";
+
+.grid {
+  @include mq.mq(mobile) {
+    grid-template-columns: auto;
+  }
+
+  @include mq.mq(tablet) {
+    grid-template-columns: auto auto;
+  }
+
+  @include mq.mq(desktop) {
+    grid-template-columns: auto auto auto;
+  }
+
+  @include mq.mq(wide) {
+    grid-template-columns: auto auto auto auto;
+  }
+
+  align-items: center;
+  column-gap: 4em;
+  display: grid;
+  flex: 1 0 auto;
+  gap: 3em;
+  grid-template-columns: auto auto auto;
+  margin: 7em auto;
+  row-gap: 4em;
+  width: 85%;
+}
