@@ -25,7 +25,7 @@ const cardInfo: CardInfo[] = [
 		name: 'Route Generator',
 		description: 'This generator helps you quickly generate a new route collection corresponding with your CRUD and API.',
 		info: 'dawadw',
-		path: '/dawdwad'
+		path: '/route-generator'
 	},
 	{
 		name: 'Database Assistant',
