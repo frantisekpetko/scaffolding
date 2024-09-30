@@ -8,12 +8,9 @@ import { Button, Flex, Footer, Navigation } from "@/components";
 import { ButtonType } from "@/components/Button/Button";
 import { JsonFetch } from "@/utils/net";
 
-interface Props {
-
-}
+interface Props { }
 
 const DatabaseAssitant: FC<Props> = () => {
-
 	async function assistantRequest(parameters:
 		{
 			url: string,
@@ -36,14 +33,10 @@ const DatabaseAssitant: FC<Props> = () => {
 				confirmButtonText: confirmButtonText,
 				denyButtonText: 'Cancel',
 				denyButtonColor: '#f8bb86'
-
 			});
 
 			if (result.isConfirmed) {
-
 				requestHandler(url);
-
-
 			}
 		}
 		catch (error) {
@@ -104,7 +97,6 @@ const DatabaseAssitant: FC<Props> = () => {
 				theme: "colored",
 				icon: true
 			});
-
 		}
 	}
 

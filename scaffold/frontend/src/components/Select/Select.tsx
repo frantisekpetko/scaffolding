@@ -6,7 +6,6 @@ import { Flex } from "@/components";
 export default function Select(
 	props: {
 		label: string,
-		//data: { [name: string]: string },
 		data: any,
 		value: string,
 		onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void,

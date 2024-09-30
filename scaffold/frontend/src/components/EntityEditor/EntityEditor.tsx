@@ -47,7 +47,6 @@ export default function EntityEditor(props: { data: any, isEditedEntity: boolean
 			columnProperty: string,
 			name: string
 		}
-
 	}[] =
 		[
 			{ label: 'varchar', value: { columnProperty: 'varchar', name: 'varchar' } },
@@ -143,8 +142,6 @@ export default function EntityEditor(props: { data: any, isEditedEntity: boolean
 				unique: false,
 				index: false,
 			}],
-
-
 		}))
 	}
 
@@ -159,7 +156,6 @@ export default function EntityEditor(props: { data: any, isEditedEntity: boolean
 				column: [...columnObj]
 			}));
 		}
-
 	};
 
 	const addRelationshipHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -170,18 +166,14 @@ export default function EntityEditor(props: { data: any, isEditedEntity: boolean
 				type: 'OneToOne',
 				table: ''
 			}],
-
-
 		}))
 	}
 
 	const dropRelationshipHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, column: number) => {
 		e.preventDefault();
 		let { relationships } = formState;
-		//console.log(column)
 
 		relationships.splice(column, 1);
-		//console.log("report", relationships);
 		setFormState((prevState) => ({
 			...prevState,
 			relationships: [...relationships]
@@ -206,27 +198,7 @@ export default function EntityEditor(props: { data: any, isEditedEntity: boolean
 				value={formState.name}
 				onChange={handleChange('name', 0)}
 			/>
-			<form onSubmit={async (e) => {
-				/*
-				e.preventDefault();
-
-				let txt: { data: string } = await (
-					await JsonFetch.post('entitygen', 
-					{
-						 name: formState.name, 
-						 columns: [...formState.columns],
-						 relationships: [...formState.relationships],
-						 originalEntityName: originalEntityName.current,
-						 isEditedEntity: props.isEditedEntity
-					})
-				).json();
-				setEntityModelTxt(txt.data);
-				setOpen(true);
-				originalEntityName.current = formState.name;
-				console.log('txt', txt.data)
-				*/
-			}
-			}>
+			<form>
 				{formState.columns.map((column, index) => (
 					<Flex
 						direction="row"
@@ -482,16 +454,6 @@ export default function EntityEditor(props: { data: any, isEditedEntity: boolean
 						type={ButtonType.BUTTON}
 						onClick={async () => {
 							if (checkIfFormIsValid()) {
-								//console.warn('originalEntityName.current', originalEntityName.current)
-								//console.warn([...formState.relationships]);
-								/*console.warn('data check', {
-									name: formState.name,
-									columns: [...formState.columns],
-									relationships: [...formState.relationships],
-									originalEntityName: originalEntityName.current,
-									isEditedEntity: props.isEditedEntity
-								});*/
-
 								let response =
 									await JsonFetch.post('entitygen',
 										{
@@ -506,7 +468,6 @@ export default function EntityEditor(props: { data: any, isEditedEntity: boolean
 								let responseOK = response && response.ok;
 								const data = await response.json();
 								if (!responseOK) {
-									//console.log(response.ok);
 									toast.error(`${data.message}'`, {
 										position: "top-right",
 										autoClose: 5000,
@@ -523,8 +484,6 @@ export default function EntityEditor(props: { data: any, isEditedEntity: boolean
 								setEntityModelTxt(data.data);
 								setOpen(true);
 								originalEntityName.current = formState.name;
-								//console.log('txt', data.data)
-								//console.log({formState});
 							}
 							else {
 								const MySwal = withReactContent(Swal)

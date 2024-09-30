@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Footer, Navigation } from "@/components";
 import { EntityEditor } from "@/components";
