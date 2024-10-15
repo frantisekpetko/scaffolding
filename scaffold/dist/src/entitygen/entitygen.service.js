@@ -14,23 +14,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var EntitygenService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntitygenService = void 0;
-const paths_service_1 = require("./paths/paths.service");
+const fs_1 = __importDefault(require("fs"));
 const common_1 = require("@nestjs/common");
-const stringmaterials_1 = require("./stringmaterials");
+const fs_2 = require("fs");
 const string_functions_1 = require("../utils/string.functions");
-const fs_1 = require("fs");
-const fs_2 = __importDefault(require("fs"));
 const typeorm_1 = require("typeorm");
+const paths_service_1 = require("./paths/paths.service");
+const stringmaterials_1 = require("./stringmaterials");
 let EntitygenService = EntitygenService_1 = class EntitygenService {
     constructor(pathsService, dataSource) {
         this.pathsService = pathsService;
         this.dataSource = dataSource;
         this.logger = new common_1.Logger(EntitygenService_1.name);
         this.firstTableName = '';
+        this.data = null;
         this.entityArr = [];
         this.isAllowedRelationshipCreating = true;
     }
     onModuleInit() {
+    }
+    setChangedDataToNull() {
+        this.data = null;
     }
     async getEntityDataForView(entityName) {
         const projectUrl = this.pathsService.getProcessProjectUrl();
@@ -46,15 +50,13 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
             columns: [],
             relationships: [],
         };
-        if (fs_2.default.existsSync(`${projectUrl}/src/server/entity/${entityName}.entity.ts`)) {
-            const txt = await fs_1.promises.readFile(`${projectUrl}/src/server/entity/${entityName}.entity.ts`, 'utf8');
+        if (fs_1.default.existsSync(`${projectUrl}/src/server/entity/${entityName}.entity.ts`)) {
+            const txt = await fs_2.promises.readFile(`${projectUrl}/src/server/entity/${entityName}.entity.ts`, 'utf8');
             const txtWithoutWhiteSpace = txt.replace(/ /g, '').replace(/\n/g, '');
-            this.logger.log(txtWithoutWhiteSpace, 'txt');
             const txtArray = txtWithoutWhiteSpace
                 .split(';')
                 .map((item) => item + ';');
             const columnTxtArray = txtArray.filter((item) => item.startsWith('@Index') || item.startsWith('@Column'));
-            this.logger.log(JSON.stringify(columnTxtArray, null, 4), 'txtArray');
             const relTxtArray = txtArray.filter((item) => item.startsWith(`@${RelationshipType.ONE_TO_ONE}`) ||
                 item.startsWith(`@${RelationshipType.ONE_TO_MANY}`) ||
                 item.startsWith(`@${RelationshipType.MANY_TO_ONE}`) ||
@@ -71,7 +73,6 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
             const columns = [];
             const relationships = [];
             const entireColumnData = stringmaterials_1.getFromBetween.get(txtWithoutWhiteSpace, '@Column({', ';@');
-            this.logger.log(JSON.stringify(columnTxtArray, null, 4));
             columnTxtArray.forEach((element) => {
                 let isUnique = stringmaterials_1.getFromBetween.get(element + ':', 'unique:', ':');
                 isUnique = isUnique.length < 1 ? false : Boolean(isUnique);
@@ -94,24 +95,14 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                     index: isIndex,
                     datatype: datatype,
                 });
-                this.logger.log('##################');
             });
-            this.logger.warn(relTxtArray, 'relTxtArray');
             relTxtArray.forEach((element) => {
                 const [relType] = stringmaterials_1.getFromBetween
                     .get(element, '@', '(()=>')[0]
                     .startsWith('JoinTable()@')
                     ? stringmaterials_1.getFromBetween.get(element, '@JoinTable()@', '(()=>')
-                    : stringmaterials_1.getFromBetween
-                        .get(element, '@', '(()=>')[0]
-                        .startsWith('JoinColumn()@')
-                        ? stringmaterials_1.getFromBetween.get(element, '@JoinColumn()@', '(()=>')
-                        : stringmaterials_1.getFromBetween.get(element, '@', '(()=>');
-                const entity = (stringmaterials_1.getFromBetween.get(element, '(()=>', stringmaterials_1.getFromBetween
-                    .get(element, '@', '(()=>')[0]
-                    .startsWith('JoinColumn()@')
-                    ? ')'
-                    : ',') + '')
+                    : stringmaterials_1.getFromBetween.get(element, '@', '(()=>');
+                const entity = (stringmaterials_1.getFromBetween.get(element, '(()=>', ',') + '')
                     .split(/(?=[A-Z])/)
                     .map((item) => item.toLocaleLowerCase())
                     .join('_');
@@ -119,11 +110,7 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                     type: relType,
                     table: entity + '',
                 });
-                this.logger.error(relType, 'relType');
-                this.logger.error(entity, 'entity');
             });
-            this.logger.debug(JSON.parse(JSON.stringify(entireColumnData))[0]);
-            this.logger.log(JSON.stringify(columns));
             data.columns = [...columns];
             if (relationships.length === 0) {
                 data.relationships = [
@@ -142,31 +129,42 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
     async createEntityFile(data) {
         const projectUrl = this.pathsService.getProcessProjectUrl();
         const conn = this.dataSource.createQueryRunner();
-        const getDataWithDeletingPreviousConnectedRelationships = async (tableName) => {
-            const unchangedData = (await this.getEntityDataForView(data.name))
-                .data;
+        if (!this.data) {
+            this.data = data;
+            this.logger.debug('set default data', JSON.stringify(this.data, null, 4));
+        }
+        if (this.firstTableName === '') {
+            this.firstTableName = data.name;
+        }
+        const getModel = (entityName) => entityName
+            .split(/(?=[A-Z])/)
+            .map((item) => item.toLowerCase())
+            .join('_');
+        const unchangedData = (await this.getEntityDataForView(getModel(this.data.name))).data;
+        const isAllowedFileWriting = async (tableName, entity) => {
             const oppositeData = (await this.getEntityDataForView(tableName))
                 .data;
+            return oppositeData.relationships.every((item) => item.table !== entity);
+        };
+        const getDataWithDeletingPreviousConnectedRelationships = async (tableName, changedData) => {
+            const oppositeData = (await this.getEntityDataForView(tableName))
+                .data;
+            const unchangedEntityData = (await this.getEntityDataForView(getModel(this.data.name))).data;
+            this.logger.debug('[getDataWithDeletingPreviousConnectedRelationships] changedData', changedData);
             let missingItems = [];
-            missingItems = unchangedData.relationships.filter((unchangedItem) => data.relationships.every((item) => item.table !== unchangedItem.table &&
+            missingItems = unchangedData.relationships.filter((unchangedItem) => changedData.relationships.every((item) => item.table !== unchangedItem.table &&
                 item.type !== unchangedItem.type));
+            this.logger.debug(`missingItems ${data.name}`, JSON.stringify(missingItems, null, 4));
+            if (missingItems.length > 0) {
+                oppositeData.relationships = [
+                    ...oppositeData.relationships.filter((item) => {
+                        return missingItems.every((missingItem) => missingItem.table !== item.table);
+                    }),
+                ];
+            }
             return oppositeData;
         };
         try {
-            const areTwoOrMoreDuplicate = (table) => {
-                let isDuplicate = false;
-                if (this.entityArr.length > 0) {
-                    const valueArr = this.entityArr.map((item) => {
-                        return item.model;
-                    });
-                    this.logger.log(JSON.stringify(valueArr, null, 4));
-                    isDuplicate = valueArr.some((item, idx) => {
-                        this.logger.log(`valueArr.indexOf(item): ${valueArr.indexOf(item)} item: ${item} idx: ${idx} valueArr.indexOf(item) != idx: ${valueArr.indexOf(item) != idx}`);
-                        return valueArr.indexOf(item) != idx;
-                    });
-                }
-                return isDuplicate;
-            };
             const model = data.name
                 .split(/(?=[A-Z])/)
                 .map((item) => item.toLowerCase())
@@ -176,7 +174,6 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
             const cols = data.columns.map((item) => {
                 const additionalProperties = (!item.notNull ? '\n   nullable: true,' : '') +
                     (item.unique ? '\n   unique: true' : '');
-                this.logger.debug(item);
                 const column = (0, stringmaterials_1.columnString)(item, stringmaterials_1.datatypes, additionalProperties);
                 if (!importsArray.includes('Index'))
                     importsArray.push('Index');
@@ -191,9 +188,14 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
             })(RelationshipType || (RelationshipType = {}));
             const relArray = [];
             const entityImportsArray = [];
-            data.relationships.forEach(async (item, index) => {
+            const dataRelArray = unchangedData.name === data.name &&
+                unchangedData.relationships.length > data.relationships.length &&
+                fs_1.default.existsSync(`${projectUrl}/src/server/entity/${getModel(data.name)}.entity.ts`)
+                ? unchangedData.relationships ?? []
+                : data.relationships;
+            for (const item of dataRelArray) {
+                const index = data.relationships.indexOf(item);
                 const tableName = data.relationships[index].table;
-                this.logger.log({ tableName });
                 if (tableName !== '') {
                     let rel = '';
                     const entity = (0, string_functions_1.capitalizeFirstLetter)(item.table);
@@ -225,8 +227,10 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                         !relArray.includes(rel) && relArray.push(rel);
                         !entityImportsArray.includes(entity) &&
                             entityImportsArray.push(_entity);
-                        if (this.isAllowedRelationshipCreating) {
-                            const data = await getDataWithDeletingPreviousConnectedRelationships(tableName);
+                        if (this.isAllowedRelationshipCreating &&
+                            (this.data.name === data.name ||
+                                (await isAllowedFileWriting(tableName, this.data.name)))) {
+                            const data = await getDataWithDeletingPreviousConnectedRelationships(tableName, this.data);
                             if (!!data.name &&
                                 data.columns.length > 0 &&
                                 data.relationships.length > 0) {
@@ -254,8 +258,10 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                         !relArray.includes(rel) && relArray.push(rel);
                         !entityImportsArray.includes(entity) &&
                             entityImportsArray.push(_entity);
-                        if (this.isAllowedRelationshipCreating) {
-                            const data = await getDataWithDeletingPreviousConnectedRelationships(tableName);
+                        if (this.isAllowedRelationshipCreating &&
+                            (this.data.name === data.name ||
+                                (await isAllowedFileWriting(tableName, this.data.name)))) {
+                            const data = await getDataWithDeletingPreviousConnectedRelationships(tableName, this.data);
                             if (!!data.name &&
                                 data.columns.length > 0 &&
                                 data.relationships.length > 0) {
@@ -286,8 +292,10 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                         !relArray.includes(rel) && relArray.push(rel);
                         !entityImportsArray.includes(entity) &&
                             entityImportsArray.push(_entity);
-                        if (this.isAllowedRelationshipCreating) {
-                            const data = await getDataWithDeletingPreviousConnectedRelationships(tableName);
+                        if (this.isAllowedRelationshipCreating &&
+                            (this.data.name === data.name ||
+                                (await isAllowedFileWriting(tableName, this.data.name)))) {
+                            const data = await getDataWithDeletingPreviousConnectedRelationships(tableName, this.data);
                             if (!!data.name &&
                                 data.columns.length > 0 &&
                                 data.relationships.length > 0) {
@@ -295,7 +303,6 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                                     ...data.relationships,
                                     { table: model, type: RelationshipType.MANY_TO_MANY },
                                 ];
-                                this.logger.warn(this.isAllowedRelationshipCreating);
                                 this.createEntityFile(data).then(() => {
                                     this.isAllowedRelationshipCreating = false;
                                 });
@@ -306,7 +313,7 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                         }
                     }
                 }
-            });
+            }
             const relationships = relArray.join('');
             let imports = '';
             if (importsArray.length > 0)
@@ -322,11 +329,9 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                 });
             }
             const content = (0, stringmaterials_1.getStringEntity)(imports, model, Model, cols.join(''), relationships, entityImports);
-            this.logger.debug(content, data.name);
             if (data.isEditedEntity &&
                 data.originalEntityName !== undefined &&
                 data.originalEntityName !== this.firstTableName) {
-                this.logger.log('check', data.originalEntityName !== undefined, data.originalEntityName !== this.firstTableName);
                 const ifTableExists = await conn.manager.query(`
                 SELECT EXISTS (
                     SELECT 
@@ -338,26 +343,24 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                         name='${data.originalEntityName}'
                 );`);
                 const count = ifTableExists[0][Object.keys(ifTableExists[0])[0]];
-                this.logger.warn(JSON.stringify(count, null, 4), 'check');
                 if (count === 1) {
                     const table = await conn.getTable(data.originalEntityName);
                     await Promise.all([
-                        fs_1.promises.rename(`${projectUrl}/src/server/entity/${data.originalEntityName}.entity.ts`, `${projectUrl}/src/server/entity/${model}.entity.ts`),
+                        fs_2.promises.rename(`${projectUrl}/src/server/entity/${data.originalEntityName}.entity.ts`, `${projectUrl}/src/server/entity/${model}.entity.ts`),
                         conn.dropForeignKeys(data.originalEntityName, table.foreignKeys),
                         conn.dropTable(data.originalEntityName),
                     ]);
                 }
                 else {
-                    await fs_1.promises.rename(`${projectUrl}/src/server/entity/${data.originalEntityName}.entity.ts`, `${projectUrl}/src/server/entity/${model}.entity.ts`);
+                    await fs_2.promises.rename(`${projectUrl}/src/server/entity/${data.originalEntityName}.entity.ts`, `${projectUrl}/src/server/entity/${model}.entity.ts`);
                 }
-                this.logger.log(`${data.originalEntityName} ${model}`);
             }
             else {
-                this.logger.log(`WriteFile: originalEntityName: ${data.originalEntityName} Model: ${model} Data.isEditedEntity: ${data.isEditedEntity}`);
             }
             if (!this.entityArr.some((e) => e.model === model)) {
                 this.entityArr.push({ model: model, content: content });
             }
+            this.logger.log('check data', content);
             return { data: content };
         }
         catch (e) {
@@ -376,7 +379,6 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                 const valueArr = this.entityArr.map((item) => {
                     return item.model;
                 });
-                this.logger.log(JSON.stringify(valueArr, null, 4));
                 isDuplicate = valueArr.includes(table);
             }
             return isDuplicate;
@@ -387,9 +389,7 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                 const valueArr = this.entityArr.map((item) => {
                     return item.model;
                 });
-                this.logger.log(JSON.stringify(valueArr, null, 4));
                 isDuplicate = valueArr.some((item, idx) => {
-                    this.logger.log(`valueArr.indexOf(item): ${valueArr.indexOf(item)} item: ${item} idx: ${idx} valueArr.indexOf(item) != idx: ${valueArr.indexOf(item) != idx}`);
                     return valueArr.indexOf(item) != idx;
                 });
             }
@@ -402,7 +402,6 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
             const cols = data.columns.map((item, index) => {
                 const additionalProperties = (!item.notNull ? '\n   nullable: true,' : '') +
                     (item.unique ? '\n   unique: true' : '');
-                this.logger.debug(item);
                 const column = (0, stringmaterials_1.columnString)(item, stringmaterials_1.datatypes, additionalProperties) +
                     (data.columns.length - 1 === index ? '' : '\n');
                 if (!importsArray.includes('Index'))
@@ -418,12 +417,9 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
             })(RelationshipType || (RelationshipType = {}));
             const relArray = [];
             const entityImportsArray = [];
-            this.logger.debug(data.relationships);
             data.relationships.forEach(async (item, index) => {
-                this.logger.log(`isDuplicate ${isDuplicate(model)}`);
                 const tableName = data.relationships[index].table;
                 if (tableName !== '') {
-                    this.logger.log(item.type[0], item.type === RelationshipType.ONE_TO_MANY, RelationshipType.ONE_TO_MANY);
                     let rel = '';
                     const entity = (0, string_functions_1.capitalizeFirstLetter)(item.table);
                     if (item.type === RelationshipType.ONE_TO_ONE) {
@@ -441,13 +437,10 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
   @${item.type}(() => ${entity}, (${item.table}) => ${item.table}.${model})
   ${item.table}s: ${entity}[];
 `;
-                        this.logger.log('item.type === RelationshipType.ONE_TO_MANY');
                         !importsArray.includes(item.type) && importsArray.push(item.type);
                         relArray.push(rel);
                         entityImportsArray.push(entity);
-                        this.logger.log(this.isAllowedRelationshipCreating, 'this.isAllowedRelationshipCreating');
                         if (!isDuplicate(model)) {
-                            this.logger.log('this.isAllowedRelationshipCreating after');
                             const data = (await this.getEntityDataForView(tableName))
                                 .data;
                             data.relationships = [
@@ -492,17 +485,14 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
 `;
                         importsArray = [...importsArray, item.type, 'JoinTable'];
                         relArray.push(rel);
-                        this.logger.log({ relArray });
                         entityImportsArray.push(entity);
                         if (!areTwoOrMoreDuplicate(model)) {
                             const data = (await this.getEntityDataForView(tableName))
                                 .data;
-                            this.logger.log('!(areTwoOrMoreDuplicate(model))');
                             data.relationships = [
                                 ...data.relationships,
                                 { table: model, type: RelationshipType.MANY_TO_MANY },
                             ];
-                            this.logger.warn(this.isAllowedRelationshipCreating);
                             this.createEntityFile(data).then(() => {
                                 this.isAllowedRelationshipCreating = false;
                             });
@@ -511,7 +501,6 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                 }
             });
             const relationships = relArray.join('\n');
-            this.logger.log('xdwawaddwadwa', { relArray });
             let imports = '';
             if (importsArray.length > 0)
                 imports = `import {${importsArray.join(', ')}} from 'typeorm'`;
@@ -524,11 +513,9 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                 });
             }
             const content = (0, stringmaterials_1.getStringEntity)(imports, model, Model, cols.join(''), relationships, entityImports);
-            this.logger.debug(content, data.name);
             if (data.isEditedEntity &&
                 data.originalEntityName !== undefined &&
                 data.originalEntityName !== this.firstTableName) {
-                this.logger.log('check', data.originalEntityName !== undefined, data.originalEntityName !== this.firstTableName);
                 const ifTableExists = await conn.manager.query(`
                 SELECT EXISTS (
                     SELECT 
@@ -540,20 +527,17 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                         name='${data.originalEntityName}'
                 );`);
                 const count = ifTableExists[0][Object.keys(ifTableExists[0])[0]];
-                this.logger.warn(JSON.stringify(count, null, 4), 'check');
                 if (count === 1) {
                     await Promise.all([
-                        fs_1.promises.rename(`${projectUrl}/src/server/entity/${data.originalEntityName}.entity.ts`, `${projectUrl}/src/server/entity/${model}.entity.ts`),
+                        fs_2.promises.rename(`${projectUrl}/src/server/entity/${data.originalEntityName}.entity.ts`, `${projectUrl}/src/server/entity/${model}.entity.ts`),
                         conn.query(`DROP TABLE '${data.originalEntityName}'`),
                     ]);
                 }
                 else {
-                    await fs_1.promises.rename(`${projectUrl}/src/server/entity/${data.originalEntityName}.entity.ts`, `${projectUrl}/src/server/entity/${model}.entity.ts`);
+                    await fs_2.promises.rename(`${projectUrl}/src/server/entity/${data.originalEntityName}.entity.ts`, `${projectUrl}/src/server/entity/${model}.entity.ts`);
                 }
-                this.logger.log(`${data.originalEntityName} ${model}`);
             }
             else {
-                this.logger.log(`WriteFile: originalEntityName: ${data.originalEntityName} Model: ${model} Data.isEditedEntity: ${data.isEditedEntity}`);
             }
             this.entityArr = this.entityArr.filter((item, i) => {
                 const indexes = [];
@@ -573,7 +557,6 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                             index: indexes[index],
                         });
                     });
-                    this.logger.warn(JSON.stringify(dataLengthItem, null, 4), 'debug');
                     let long1 = 0;
                     function longestString(arr) {
                         let itemt = arr[0];
@@ -593,7 +576,6 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
             return { data: content };
         }
         catch (e) {
-            this.logger.error(e?.stack);
         }
         finally {
             await conn.release();
@@ -601,12 +583,9 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
     }
     async finishGeneratingEntityFile() {
         const projectUrl = this.pathsService.getProcessProjectUrl();
-        this.logger.warn(this.content, 'this.content');
-        this.logger.log('finishGeneratingEntityFile', JSON.stringify(this.entityArr, null, 4));
         this.entityArr.forEach(async (item, index) => {
             const content = item.content;
-            this.logger.log(content, index + 1);
-            await fs_1.promises.writeFile(`${projectUrl}/src/server/entity/${item.model}.entity.ts`, item.content, 'utf8');
+            await fs_2.promises.writeFile(`${projectUrl}/src/server/entity/${item.model}.entity.ts`, item.content, 'utf8');
         });
         this.isAllowedRelationshipCreating = true;
         this.entityArr = [];
@@ -617,9 +596,8 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
         const rootUrl = this.pathsService.getRootUrl();
         const items = [];
         const checkIfDuplicateItems = [];
-        this.logger.warn('if exists rooturl with entities ' + fs_2.default.existsSync(`${rootUrl}/entity`));
         function getDataFromEntityDir() {
-            const srcEntityFiles = fs_2.default.readdirSync(`${projectUrl}/src/server/entity`);
+            const srcEntityFiles = fs_1.default.readdirSync(`${projectUrl}/src/server/entity`);
             if (srcEntityFiles.length > 0) {
                 srcEntityFiles.forEach((file, i) => {
                     const table = file.split('.')[0];
@@ -639,10 +617,8 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                 });
             }
         }
-        if (fs_2.default.existsSync(`${rootUrl}/entity`)) {
-            this.logger.debug(fs_2.default.existsSync(`${rootUrl}/entity`), 'if exists rootUrl');
-            this.logger.debug(`${rootUrl}/entity`, 'if exists rootUrl');
-            const distEntityFiles = fs_2.default.readdirSync(`${rootUrl}/entity`);
+        if (fs_1.default.existsSync(`${rootUrl}/server/entity`)) {
+            const distEntityFiles = fs_1.default.readdirSync(`${rootUrl}/server/entity`);
             if (distEntityFiles.length > 0) {
                 distEntityFiles.forEach((file, i) => {
                     const table = file.split('.')[0];
@@ -676,28 +652,25 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
         const conn = this.dataSource.createQueryRunner();
         try {
             const fileToDelete = entityName.split('.')[0];
-            if (fs_2.default.existsSync(rootUrl)) {
-                const distEntityFiles = fs_2.default.readdirSync(`${rootUrl}/entity`);
+            if (fs_1.default.existsSync(rootUrl)) {
+                const distEntityFiles = fs_1.default.readdirSync(`${rootUrl}/server/entity`);
                 if (distEntityFiles.length > 0) {
                     distEntityFiles.forEach(async (file, i) => {
                         const table = file.split('.')[0];
-                        this.logger.warn(entityName, fs_2.default.existsSync(`${projectUrl}/src/server/entity/${entityName}`) +
-                            '');
                         if (table === fileToDelete) {
-                            await fs_1.promises.unlink(`${rootUrl}/entity/${file}`);
+                            await fs_2.promises.unlink(`${rootUrl}/server/entity/${file}`);
                         }
                     });
                 }
             }
-            if (fs_2.default.existsSync(`${projectUrl}/src/server/entity/${entityName}`)) {
-                await fs_1.promises.unlink(`${projectUrl}/src/server/entity/${entityName}`);
+            if (fs_1.default.existsSync(`${projectUrl}/src/server/entity/${entityName}`)) {
+                await fs_2.promises.unlink(`${projectUrl}/src/server/entity/${entityName}`);
                 const table = await conn.getTable(fileToDelete);
                 await conn.dropForeignKeys(fileToDelete, table.foreignKeys);
                 await conn.dropTable(fileToDelete);
             }
         }
         catch (e) {
-            this.logger.error(e?.stack);
         }
         finally {
             await conn.release();

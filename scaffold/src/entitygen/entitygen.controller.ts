@@ -133,7 +133,12 @@ export class EntitygenController {
 
   @Post()
   async createEntityFile(@Body() data: Data): Promise<{ data: string }> {
-    return this.entityGenService.createEntityFile(data);
+    this.logger.log('check data [createEntityFile] controller', data);
+    const dataString: { data: string } =
+      await this.entityGenService.createEntityFile(data);
+    this.entityGenService.setChangedDataToNull();
+    this.logger.log(dataString);
+    return dataString;
   }
 
   @Post('/finish')

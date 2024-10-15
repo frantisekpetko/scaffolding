@@ -18,7 +18,7 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 	const [loading, setLoading] = useState<boolean>(true);
 	const socket = useRef<any>();
 
-	async function getData() {);
+	async function getData() {
 		const data = await (await JsonFetch.get('entitygen')).json();
 		console.log({ data })
 		setEntities(data);
