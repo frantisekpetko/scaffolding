@@ -55,14 +55,19 @@ let AssistantService = AssistantService_1 = class AssistantService {
     async createAllEntities(data) {
         try {
             for (const schema of data) {
-                await Promise.all([
+                this.logger.log(schema.name);
+                Promise.all([
                     this.entitygenService.createEntityFile(schema),
                     this.entitygenService.finishGeneratingEntityFile(),
-                ]);
+                ]).finally(() => {
+                    this.entitygenService.setChangedDataToNull();
+                });
             }
         }
         catch (err) {
             this.logger.error(`err ${err}`);
+        }
+        finally {
         }
     }
     getSrcFiles() {
@@ -117,7 +122,6 @@ let AssistantService = AssistantService_1 = class AssistantService {
         };
         await Promise.all([getDistFiles(), getSrcFiles()]);
         try {
-            const entities = conn.entityMetadatas;
             await queryRunner.release();
             async function removeDistFiles() {
                 for (const file of distDir) {

@@ -1,0 +1,82 @@
+[
+    {
+        "name": "Address",
+        "columns": [],
+        "relationships": [
+            {
+                "type": "OneToOne",
+                "table": ""
+            }
+        ]
+    },
+    {
+        "name": "Admin",
+        "columns": [],
+        "relationships": [
+            {
+                "type": "OneToOne",
+                "table": ""
+            }
+        ]
+    },
+    {
+        "name": "Category",
+        "columns": [],
+        "relationships": [
+            {
+                "type": "OneToOne",
+                "table": ""
+            }
+        ]
+    },
+    {
+        "name": "Customer",
+        "columns": [],
+        "relationships": [
+            {
+                "type": "OneToOne",
+                "table": ""
+            }
+        ]
+    },
+    {
+        "name": "Image",
+        "columns": [],
+        "relationships": [
+            {
+                "type": "OneToOne",
+                "table": ""
+            }
+        ]
+    },
+    {
+        "name": "Order",
+        "columns": [],
+        "relationships": [
+            {
+                "type": "OneToOne",
+                "table": ""
+            }
+        ]
+    },
+    {
+        "name": "OrderToProduct",
+        "columns": [],
+        "relationships": [
+            {
+                "type": "OneToOne",
+                "table": ""
+            }
+        ]
+    },
+    {
+        "name": "Product",
+        "columns": [],
+        "relationships": [
+            {
+                "type": "OneToOne",
+                "table": ""
+            }
+        ]
+    }
+]

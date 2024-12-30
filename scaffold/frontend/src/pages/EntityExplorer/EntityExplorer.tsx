@@ -14,15 +14,11 @@ const Comp = (props: any) => {
 }
 
 export default function EntityExplorer(props: any): ReturnType<React.FC> {
-
 	const [entities, setEntities] = useState<{ entityName: string, filename: string, table: string }[]>([]);
-
 	const [loading, setLoading] = useState<boolean>(true);
-
 	const socket = useRef<any>();
 
 	async function getData() {
-		//setLoading(true);
 		const data = await (await JsonFetch.get('entitygen')).json();
 		console.log({ data })
 		setEntities(data);
@@ -30,7 +26,6 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 	}
 
 	useEffect(() => {
-
 		socket.current = io(`http://localhost:3000/generator`);
 
 		socket.current.on("connect_error", (err: any) => {
@@ -38,7 +33,6 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 		});
 
 		socket.current.on('error', function (err: any) {
-
 			if (Object.hasOwn(err, 'data') && Object.hasOwn(err.data, 'message')) {
 				toast.error(`${err.data.message}`, {
 					position: "top-right",
@@ -51,16 +45,12 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 					icon: true
 				});
 			}
-
-			console.warn('err', { err });
 		});
 
 		socket.current.on('ping', function (err: any) {
 			if (typeof console !== "undefined" && console !== null) {
 				console.log("Socket.io reported a generic error");
 			}
-			console.warn('err', { err });
-
 		});
 
 		socket.current.on('update', (data: any) => console.log(data))
@@ -97,7 +87,6 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 			setEntities(data);
 			setLoading(false);
 		})
-		//getData();
 
 		return () => {
 			socket.current.close()
@@ -108,11 +97,6 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 	}, []);
 
 	const navigate = useNavigate();
-
-	const openInNewTab = (url: string) => {
-		const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
-		if (newWindow) newWindow.opener = null
-	}
 
 	return <>
 		<Navigation />
@@ -133,7 +117,6 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 							key={Date.now() + Math.random()}
 							className={EntityStyles.li}
 						>
-
 							<label
 								htmlFor="list-input1"
 								className={EntityStyles.title}
@@ -154,7 +137,6 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 
 										}}
 										className={EntityStyles.pointer}
-
 									>
 										{item.entityName}
 									</b>
@@ -164,23 +146,14 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 									</span>
 								</span>
 
-
-
 								<FontAwesomeIcon
 									icon={faTrash}
 									style={{ justifyContent: 'flex-end' }}
 									className={EntityStyles.pointer}
 									onClick={async () => {
-
-										//JsonFetch.delete(`entitygen/entity/${item.filename}`).then(async () => await getData()).catch((e) => console.log(e));
-										//setTimeout(async () => await getData(), 1500)
-										//await getData();
 										try {
 											setLoading(true);
 											socket.current.emit('delete', item.filename);
-											//await fetch(`entitygen/entity/${item.filename}`, {method: 'DELETE'});
-											//JsonFetch.delete(`entitygen/entity/${item.filename}`);//.then(async () => await getData());
-											//socket.current.emit('entities');
 
 										} catch (error) {
 											console.warn('Error', error);
@@ -196,7 +169,6 @@ export default function EntityExplorer(props: any): ReturnType<React.FC> {
 						</li>
 
 					})
-
 					: <Flex
 						justifyContent='center'>
 						<span className={EntityStyles.loading}></span>

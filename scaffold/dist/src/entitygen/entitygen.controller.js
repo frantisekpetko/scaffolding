@@ -34,7 +34,11 @@ let EntitygenController = EntitygenController_1 = class EntitygenController {
         return items;
     }
     async createEntityFile(data) {
-        return this.entityGenService.createEntityFile(data);
+        this.logger.log('check data [createEntityFile] controller', data);
+        const dataString = await this.entityGenService.createEntityFile(data);
+        this.entityGenService.setChangedDataToNull();
+        this.logger.log(dataString);
+        return dataString;
     }
     async finishGeneratingEntityFile(data) {
         return this.entityGenService.finishGeneratingEntityFile();

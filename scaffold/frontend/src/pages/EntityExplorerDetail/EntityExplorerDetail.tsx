@@ -1,12 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import io, { Socket } from "socket.io-client";
+import React, { useEffect, useRef, useState } from "react";
+import io from "socket.io-client";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Flex, Footer, Navigation } from "@/components";
+import { Footer, Navigation } from "@/components";
 import { EntityEditor } from "@/components";
-import { Column, FormState, emptyFormState } from "@/components/EntityEditor/types";
 import { Logger } from "@/utils/logger";
-import { JsonFetch } from "@/utils/net";
 
 export default function EntityExplorerDetail(props: any): ReturnType<React.FC> {
 	const { entity } = useParams();
@@ -19,12 +17,10 @@ export default function EntityExplorerDetail(props: any): ReturnType<React.FC> {
 	LOG.log('rerender')
 
 	useEffect(() => {
-		//const entityData: FormState = emptyFormState;
 		LOG.log(entity)
 		socket.current = io(`http://localhost:3000/generator`);
 
 		socket.current.on('error', function (err: any) {
-
 			if (Object.hasOwn(err, 'data') && Object.hasOwn(err.data, 'message')) {
 				toast.error(`${err.data.message}`, {
 					position: "top-right",

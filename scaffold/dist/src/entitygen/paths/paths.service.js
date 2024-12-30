@@ -34,9 +34,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var PathsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PathsService = void 0;
-const common_1 = require("@nestjs/common");
 const path = __importStar(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const common_1 = require("@nestjs/common");
 let PathsService = PathsService_1 = class PathsService {
     constructor() {
         this.logger = new common_1.Logger(PathsService_1.name);
@@ -45,7 +45,6 @@ let PathsService = PathsService_1 = class PathsService {
         let processProjectUrl = path.resolve(`${process.cwd()}/../${process.env.PROJECT_URL}`);
         this.logger.warn({ processProjectUrl }, fs_1.default.existsSync(processProjectUrl), 'xxx');
         if (fs_1.default.existsSync(processProjectUrl)) {
-            this.logger.debug('fs.existsSync', 'xxx');
             return processProjectUrl;
         }
         else {
