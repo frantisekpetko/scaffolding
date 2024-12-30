@@ -16,11 +16,16 @@ export class PathsService {
     let processProjectUrl: string = path.resolve(
       `${process.cwd()}/../${process.env.PROJECT_URL}`,
     );
-    this.logger.warn(
-      { processProjectUrl },
-      fs.existsSync(processProjectUrl),
-      'xxx',
-    );
+
+	this.logger.warn(
+		{ processProjectUrl },
+		fs.existsSync(processProjectUrl),
+		'xxx',
+	);
+
+	return processProjectUrl;
+	/*
+
     if (fs.existsSync(processProjectUrl)) {
       return processProjectUrl;
     } else {
@@ -41,6 +46,7 @@ export class PathsService {
         );
       }
     }
+	  */
   }
 
   getRootUrl(): string | null {

@@ -12,15 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 var EntitygenService_1;
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntitygenService = void 0;
 const fs_1 = __importDefault(require("fs"));
 const common_1 = require("@nestjs/common");
 const fs_2 = require("fs");
-const string_functions_1 = require("../utils/string.functions");
 const typeorm_1 = require("typeorm");
 const paths_service_1 = require("./paths/paths.service");
+const string_functions_1 = require("../utils/string.functions");
 const stringmaterials_1 = require("./stringmaterials");
 let EntitygenService = EntitygenService_1 = class EntitygenService {
     constructor(pathsService, dataSource) {
@@ -39,6 +38,7 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
     }
     async getEntityDataForView(entityName) {
         const projectUrl = this.pathsService.getProcessProjectUrl();
+        this.logger.log('check project dir', projectUrl);
         let RelationshipType;
         (function (RelationshipType) {
             RelationshipType["ONE_TO_ONE"] = "OneToOne";
@@ -132,7 +132,7 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
         const conn = this.dataSource.createQueryRunner();
         if (!this.data) {
             this.data = data;
-            this.logger.debug('set default data', JSON.stringify(this.data, null, 4));
+            this.logger.debug('set default data', this.data);
         }
         if (this.firstTableName === '') {
             this.firstTableName = data.name;
@@ -155,7 +155,7 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
             let missingItems = [];
             missingItems = unchangedData.relationships.filter((unchangedItem) => changedData.relationships.every((item) => item.table !== unchangedItem.table &&
                 item.type !== unchangedItem.type));
-            this.logger.debug(`missingItems ${data.name}`, JSON.stringify(missingItems, null, 4));
+            this.logger.debug(`missingItems ${data.name}`, missingItems);
             if (missingItems.length > 0) {
                 oppositeData.relationships = [
                     ...oppositeData.relationships.filter((item) => {
@@ -196,7 +196,10 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
                 : data.relationships;
             for (const item of dataRelArray) {
                 const index = data.relationships.indexOf(item);
-                const tableName = data.relationships[index].table;
+                this.logger.debug('check item [data.relationships]', data.relationships);
+                this.logger.debug('check item [data.relationships.indexOf(item)]', data.relationships.indexOf(item));
+                this.logger.debug('check item [data.relationships[index]]', data.relationships[index]);
+                const tableName = item.table;
                 if (tableName !== '') {
                     let rel = '';
                     const entity = (0, string_functions_1.capitalizeFirstLetter)(item.table);
@@ -680,7 +683,8 @@ let EntitygenService = EntitygenService_1 = class EntitygenService {
 };
 EntitygenService = EntitygenService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [paths_service_1.PathsService, typeof (_a = typeof typeorm_1.DataSource !== "undefined" && typeorm_1.DataSource) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [paths_service_1.PathsService,
+        typeorm_1.DataSource])
 ], EntitygenService);
 exports.EntitygenService = EntitygenService;
 //# sourceMappingURL=entitygen.service.js.map

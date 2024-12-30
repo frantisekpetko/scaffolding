@@ -44,23 +44,7 @@ let PathsService = PathsService_1 = class PathsService {
     getProcessProjectUrl() {
         let processProjectUrl = path.resolve(`${process.cwd()}/../${process.env.PROJECT_URL}`);
         this.logger.warn({ processProjectUrl }, fs_1.default.existsSync(processProjectUrl), 'xxx');
-        if (fs_1.default.existsSync(processProjectUrl)) {
-            return processProjectUrl;
-        }
-        else {
-            console.warn('daadwwad');
-            if (fs_1.default.existsSync('../../..')) {
-                process.env.PROJECT_URL = '../../..';
-                processProjectUrl = path.resolve(`${process.cwd()}/../${process.env.PROJECT_URL}`);
-                return processProjectUrl;
-            }
-            else {
-                throw new common_1.ServiceUnavailableException(`Project path ${processProjectUrl} doesn't exist. Please check PROJECT_URL property in your .env file. Othwerwise scaffold will may not work properly!`, {
-                    cause: new Error(),
-                    description: `Project path ${processProjectUrl} doesn't exist. Please check PROJECT_URL property in your .env file. Othwerwise scaffold will may not work properly!`,
-                });
-            }
-        }
+        return processProjectUrl;
     }
     getRootUrl() {
         const processProjectUrl = path.resolve(`${process.cwd()}/../${process.env.PROJECT_URL}`);

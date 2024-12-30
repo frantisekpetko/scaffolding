@@ -48,6 +48,7 @@ AppModule = __decorate([
                 envFilePath: `${process.cwd()}/.env`,
                 isGlobal: true,
             }),
+            assistant_module_1.AssistantModule,
             serve_static_1.ServeStaticModule.forRoot({
                 rootPath: `${process.cwd()}/frontend/${process.env.NODE_ENV === 'development' ? 'public' : 'dist'}`,
                 exclude: ['/api*'],
@@ -74,7 +75,6 @@ AppModule = __decorate([
                 ],
             }),
             shared_module_1.SharedModule,
-            assistant_module_1.AssistantModule,
         ],
     })
 ], AppModule);

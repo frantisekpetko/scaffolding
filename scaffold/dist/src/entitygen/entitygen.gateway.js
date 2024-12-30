@@ -12,17 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 var EntitygenGateway_1;
-var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntitygenGateway = void 0;
+const chokidar_1 = __importDefault(require("chokidar"));
+const socket_io_1 = require("socket.io");
+const typeorm_1 = require("typeorm");
+const websocket_exception_filter_1 = require("../shared/websocket-exception.filter");
 const entitygen_service_1 = require("./entitygen.service");
+const paths_service_1 = require("./paths/paths.service");
 const common_1 = require("@nestjs/common");
 const websockets_1 = require("@nestjs/websockets");
-const socket_io_1 = require("socket.io");
-const websocket_exception_filter_1 = require("../shared/websocket-exception.filter");
-const chokidar_1 = __importDefault(require("chokidar"));
-const paths_service_1 = require("./paths/paths.service");
-const typeorm_1 = require("typeorm");
 let EntitygenGateway = EntitygenGateway_1 = class EntitygenGateway {
     constructor(entityGenService, pathsService, dataSource) {
         this.entityGenService = entityGenService;
@@ -95,14 +94,14 @@ let EntitygenGateway = EntitygenGateway_1 = class EntitygenGateway {
     }
     async handleEntitiesMessage(client) {
         const data = await this.entityGenService.getEntityData();
-        this.logger.log('entities', JSON.stringify(data, null, 4));
+        this.logger.log('entities', data);
         this.wss.emit('entities', data);
     }
     async handleMessage(client, entity) {
         this.logger.warn("@SubscribeMessage('view')");
         this.logger.warn(entity, 'entity');
         const entityDataForView = await this.entityGenService.getEntityDataForView(entity);
-        this.logger.warn(JSON.stringify(entityDataForView, null, 4), 'entityDataForView');
+        this.logger.warn(entityDataForView, 'entityDataForView');
         this.wss.emit('viewdata', entityDataForView);
     }
     async deleteEntity(client, entityName) {
@@ -129,18 +128,18 @@ let EntitygenGateway = EntitygenGateway_1 = class EntitygenGateway {
             }
         }
         const data = await this.entityGenService.getEntityData();
-        this.logger.warn(JSON.stringify(data, null, 4), 'entities');
+        this.logger.warn(data, 'entities');
         this.wss.emit('entities', data);
     }
 };
 __decorate([
     (0, websockets_1.WebSocketServer)(),
-    __metadata("design:type", typeof (_b = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _b : Object)
+    __metadata("design:type", socket_io_1.Server)
 ], EntitygenGateway.prototype, "wss", void 0);
 __decorate([
     (0, websockets_1.SubscribeMessage)('entities'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [socket_io_1.Socket]),
     __metadata("design:returntype", Promise)
 ], EntitygenGateway.prototype, "handleEntitiesMessage", null);
 __decorate([
@@ -161,7 +160,8 @@ EntitygenGateway = EntitygenGateway_1 = __decorate([
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [entitygen_service_1.EntitygenService,
-        paths_service_1.PathsService, typeof (_a = typeof typeorm_1.DataSource !== "undefined" && typeorm_1.DataSource) === "function" ? _a : Object])
+        paths_service_1.PathsService,
+        typeorm_1.DataSource])
 ], EntitygenGateway);
 exports.EntitygenGateway = EntitygenGateway;
 //# sourceMappingURL=entitygen.gateway.js.map

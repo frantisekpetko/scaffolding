@@ -8,13 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssistantController = void 0;
-const common_1 = require("@nestjs/common");
+const fs_1 = __importDefault(require("fs"));
 const assistant_service_1 = require("./assistant.service");
+const common_1 = require("@nestjs/common");
 let AssistantController = class AssistantController {
     constructor(assistantService) {
         this.assistantService = assistantService;
+    }
+    getLogFile() {
+        let logsString = JSON.parse(fs_1.default.readFileSync('logs/app.log', 'utf8'));
+        return logsString;
     }
     recreateDatabaseSchema() {
         return this.assistantService.recreateDatabaseSchema();
@@ -32,6 +40,12 @@ let AssistantController = class AssistantController {
         return this.assistantService.getEntityMetadata();
     }
 };
+__decorate([
+    (0, common_1.Get)('logs'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AssistantController.prototype, "getLogFile", null);
 __decorate([
     (0, common_1.Post)('schema/recreate'),
     __metadata("design:type", Function),

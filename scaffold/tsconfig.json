@@ -13,7 +13,14 @@
     "resolveJsonModule": true,
     "rootDir": "./",
     "module": "commonJS",
-    "esModuleInterop": true
-
+    "esModuleInterop": true,
+    "strict": false,
+	"forceConsistentCasingInFileNames": true,
+	"moduleResolution": "node",
+	"lib": ["es2021", "dom"],
+	"typeRoots": ["node_modules/@types"],
+	"paths": {
+	  "src/*": ["src/*"]
+	}
   }
 }

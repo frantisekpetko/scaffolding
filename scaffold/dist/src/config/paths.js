@@ -27,6 +27,6 @@ exports.root = exports.processProjectUrl = void 0;
 const path = __importStar(require("path"));
 const common_1 = require("@nestjs/common");
 const logger = new common_1.Logger('paths.ts');
-exports.processProjectUrl = path.resolve(process.cwd(), '../../../project');
+exports.processProjectUrl = path.resolve(process.cwd(), '../../..');
 exports.root = `${exports.processProjectUrl}/dist/src/server`;
 //# sourceMappingURL=paths.js.map

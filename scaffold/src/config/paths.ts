@@ -6,6 +6,6 @@ const logger = new Logger('paths.ts');
 
 export const processProjectUrl: string = path.resolve(
 	process.cwd(),
-	'../../../project',
+	'../../..',
 );
 export const root = `${processProjectUrl}/dist/src/server`;

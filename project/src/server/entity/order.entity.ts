@@ -11,6 +11,7 @@ import {Index, ManyToOne, OneToMany} from 'typeorm'
 import {Address} from './address.entity';
 import {Customer} from './customer.entity';
 import {OrderToProduct} from './order_to_product.entity';
+import {OrderToProduct} from './order_to_product.entity';
 
 
 @Entity({ name: 'order' })

@@ -1,9 +1,9 @@
-import fs, { promises as fsPromises } from 'fs';
-import path from 'path';
-import { DataSource } from 'typeorm';
-import { PathsService } from '../entitygen/paths/paths.service';
-import { processProjectUrl, root } from './../config/paths';
-import { EntitygenService } from './../entitygen/entitygen.service';
+import fs, { promises as fsPromises } from "fs";
+import path from "path";
+import { DataSource } from "typeorm";
+import { PathsService } from "../entitygen/paths/paths.service";
+import { processProjectUrl, root } from "./../config/paths";
+import { EntitygenService } from "./../entitygen/entitygen.service";
 
 import {
   BadRequestException,
@@ -11,6 +11,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
+
 
 @Injectable()
 export class AssistantService {
@@ -152,7 +153,7 @@ export class AssistantService {
 
       const query = await conn.manager.query(`SELECT * from sqlite_master`);
       //const count = ifTableExists[0][Object.keys(ifTableExists[0])[0]];
-      this.logger.warn(JSON.stringify(query, null, 4), 'check');
+      this.logger.warn(query, 'check');
       /*
 	  
 				  for (const entity of entities) {
@@ -164,7 +165,7 @@ export class AssistantService {
 
       await queryRunner.query('PRAGMA foreign_keys = OFF');
       for (const entity of query) {
-        this.logger.log(JSON.stringify(entity.name, null, 4));
+        this.logger.log(entity.name);
         if (entity.name !== 'sqlite_sequence') {
           //await queryRunner.query(`UNLOCK TABLE ${entity.tbl_name}`);
           //await queryRunner.query(`DROP table IF EXISTS ${entity.tbl_name}`);
@@ -177,7 +178,7 @@ export class AssistantService {
 
       return;
     } catch (err) {
-      this.logger.error(JSON.stringify(err, null, 4));
+      this.logger.error(err);
       throw new BadRequestException(JSON.stringify(err, null, 4));
     }
   }
@@ -229,7 +230,7 @@ export class AssistantService {
       const columnsData = [];
       let columns = [];
       columns = metadata.columns.map((column) => column.type);
-      this.logger.log(JSON.stringify(columns, null, 4));
+      this.logger.log(columns);
       const columnMap = metadata.columns.map((column) => column.propertyName);
       columns.forEach((item, i) => {
         this.logger.log(columns[i]);

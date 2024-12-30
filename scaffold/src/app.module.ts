@@ -19,6 +19,7 @@ import {
 			envFilePath: `${process.cwd()}/.env`,
 			isGlobal: true,
 		}),
+		AssistantModule,
 		ServeStaticModule.forRoot({
 			rootPath: `${process.cwd()}/frontend/${process.env.NODE_ENV === 'development' ? 'public' : 'dist'
 				}`,
@@ -55,7 +56,7 @@ import {
 			],
 		}),
 		SharedModule,
-		AssistantModule,
+
 	],
 })
 export class AppModule { }

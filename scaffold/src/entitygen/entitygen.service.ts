@@ -1,19 +1,21 @@
-import fs from 'fs';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { promises as fsPromises } from 'fs';
+import fs from "fs";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { promises as fsPromises } from "fs";
+import { DataSource } from "typeorm";
+import { Column, Data, Relationship } from "./data.dto";
+import { PathsService } from "./paths/paths.service";
+
 import {
   capitalizeFirstLetter,
   getObjectBetweenParentheses,
 } from 'src/utils/string.functions';
-import { DataSource } from 'typeorm';
-import { Column, Data, Relationship } from './data.dto';
-import { PathsService } from './paths/paths.service';
 import {
   columnString,
   datatypes,
   getFromBetween,
   getStringEntity,
 } from './stringmaterials';
+
 
 type FormColumn = {
   nameOfColumn: string;
@@ -71,6 +73,7 @@ export class EntitygenService implements OnModuleInit {
   async getEntityDataForView(entityName: string): Promise<{ data: Data }> {
     const projectUrl = this.pathsService.getProcessProjectUrl();
     //const rootUrl = this.envService.getRootUrl();
+	this.logger.log('check project dir', projectUrl);
 
     enum RelationshipType {
       'ONE_TO_ONE' = 'OneToOne',
@@ -239,7 +242,7 @@ export class EntitygenService implements OnModuleInit {
 
     if (!this.data) {
       this.data = data;
-      this.logger.debug('set default data', JSON.stringify(this.data, null, 4));
+      this.logger.debug('set default data', this.data);
     }
 
     if (this.firstTableName === '') {
@@ -317,7 +320,7 @@ export class EntitygenService implements OnModuleInit {
 
       this.logger.debug(
         `missingItems ${data.name}`,
-        JSON.stringify(missingItems, null, 4),
+        missingItems,
       );
 
       if (missingItems.length > 0) {
@@ -402,7 +405,11 @@ export class EntitygenService implements OnModuleInit {
 
       for (const item of dataRelArray) {
         const index: number = data.relationships.indexOf(item);
-        const tableName = data.relationships[index].table;
+		this.logger.debug('check item [data.relationships]', data.relationships);
+		this.logger.debug('check item [data.relationships.indexOf(item)]', data.relationships.indexOf(item));
+		this.logger.debug('check item [data.relationships[index]]', data.relationships[index]);
+        //const tableName = data.relationships[index].table;
+		const tableName = item.table;
         //this.logger.log({ tableName });
         if (tableName !== '') {
           let rel = '';

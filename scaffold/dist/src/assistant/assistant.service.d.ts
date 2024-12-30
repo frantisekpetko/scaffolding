@@ -1,6 +1,6 @@
-import { DataSource } from 'typeorm';
-import { PathsService } from '../entitygen/paths/paths.service';
-import { EntitygenService } from './../entitygen/entitygen.service';
+import { DataSource } from "typeorm";
+import { PathsService } from "../entitygen/paths/paths.service";
+import { EntitygenService } from "./../entitygen/entitygen.service";
 export declare class AssistantService {
     private entitygenService;
     private pathsService;

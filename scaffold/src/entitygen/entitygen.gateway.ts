@@ -1,35 +1,37 @@
-import { EntitygenService } from './entitygen.service';
-import { Data, Relationship } from './data.dto';
+import chokidar from "chokidar";
+import fs from "fs";
+import { TypeOrmDataSourceFactory } from "@nestjs/typeorm";
+import { promises as fsPromises } from "fs";
+import { Server, Socket } from "socket.io";
+import { DataSource } from "typeorm";
+import { cli } from "winston/lib/winston/config";
+import { WebsocketExceptionsFilter } from "../shared/websocket-exception.filter";
+import { Data, Relationship } from "./data.dto";
+import { EntitygenService } from "./entitygen.service";
+import { PathsService } from "./paths/paths.service";
+
 import {
-  InternalServerErrorException,
-  Logger,
-  OnModuleInit,
-  OnApplicationBootstrap,
-  Injectable,
   HttpException,
   HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  OnApplicationBootstrap,
+  OnModuleInit,
   UseFilters,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import {
+  OnGatewayConnection,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
-  OnGatewayConnection,
   WsException,
+  WsResponse,
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
-import { promises as fsPromises } from 'fs';
-import fs from 'fs';
-import { WebsocketExceptionsFilter } from '../shared/websocket-exception.filter';
-import { cli } from 'winston/lib/winston/config';
-import chokidar from 'chokidar';
-import { PathsService } from './paths/paths.service';
-import { TypeOrmDataSourceFactory } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+
 
 @WebSocketGateway({ namespace: '/generator', cors: true })
 @UseFilters(new WebsocketExceptionsFilter())
@@ -195,7 +197,7 @@ export class EntitygenGateway
   @SubscribeMessage('entities')
   async handleEntitiesMessage(client: Socket) {
     const data = await this.entityGenService.getEntityData();
-    this.logger.log('entities', JSON.stringify(data, null, 4));
+    this.logger.log('entities', data);
 
     //throw new WsException('some error')
     //client.emit('entities', data);
@@ -212,7 +214,7 @@ export class EntitygenGateway
       entity,
     );
     this.logger.warn(
-      JSON.stringify(entityDataForView, null, 4),
+      entityDataForView,
       'entityDataForView',
     );
     this.wss.emit('viewdata', entityDataForView);
@@ -249,7 +251,7 @@ export class EntitygenGateway
     }
 
     const data = await this.entityGenService.getEntityData();
-    this.logger.warn(JSON.stringify(data, null, 4), 'entities');
+    this.logger.warn(data, 'entities');
 
     this.wss.emit('entities', data);
   }

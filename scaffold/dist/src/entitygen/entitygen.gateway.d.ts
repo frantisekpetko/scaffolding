@@ -1,10 +1,10 @@
 /// <reference types="node" />
-import { EntitygenService } from './entitygen.service';
-import { OnModuleInit, OnApplicationBootstrap } from '@nestjs/common';
-import { OnGatewayInit, OnGatewayConnection } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
-import { PathsService } from './paths/paths.service';
-import { DataSource } from 'typeorm';
+import { Server, Socket } from "socket.io";
+import { DataSource } from "typeorm";
+import { EntitygenService } from "./entitygen.service";
+import { PathsService } from "./paths/paths.service";
+import { OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
+import { OnGatewayConnection, OnGatewayInit } from '@nestjs/websockets';
 export declare class EntitygenGateway implements OnGatewayInit, OnGatewayConnection, OnModuleInit, OnApplicationBootstrap {
     private entityGenService;
     private pathsService;

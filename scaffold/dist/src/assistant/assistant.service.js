@@ -35,7 +35,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 var AssistantService_1;
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssistantService = void 0;
 const fs_1 = __importStar(require("fs"));
@@ -135,11 +134,11 @@ let AssistantService = AssistantService_1 = class AssistantService {
             }
             await Promise.all([removeDistFiles(), removeSrcFiles()]);
             const query = await conn.manager.query(`SELECT * from sqlite_master`);
-            this.logger.warn(JSON.stringify(query, null, 4), 'check');
+            this.logger.warn(query, 'check');
             this.dataSource.dropDatabase();
             await queryRunner.query('PRAGMA foreign_keys = OFF');
             for (const entity of query) {
-                this.logger.log(JSON.stringify(entity.name, null, 4));
+                this.logger.log(entity.name);
                 if (entity.name !== 'sqlite_sequence') {
                 }
             }
@@ -147,7 +146,7 @@ let AssistantService = AssistantService_1 = class AssistantService {
             return;
         }
         catch (err) {
-            this.logger.error(JSON.stringify(err, null, 4));
+            this.logger.error(err);
             throw new common_1.BadRequestException(JSON.stringify(err, null, 4));
         }
     }
@@ -183,7 +182,7 @@ let AssistantService = AssistantService_1 = class AssistantService {
             const columnsData = [];
             let columns = [];
             columns = metadata.columns.map((column) => column.type);
-            this.logger.log(JSON.stringify(columns, null, 4));
+            this.logger.log(columns);
             const columnMap = metadata.columns.map((column) => column.propertyName);
             columns.forEach((item, i) => {
                 this.logger.log(columns[i]);
@@ -246,7 +245,8 @@ let AssistantService = AssistantService_1 = class AssistantService {
 AssistantService = AssistantService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [entitygen_service_1.EntitygenService,
-        paths_service_1.PathsService, typeof (_a = typeof typeorm_1.DataSource !== "undefined" && typeorm_1.DataSource) === "function" ? _a : Object])
+        paths_service_1.PathsService,
+        typeorm_1.DataSource])
 ], AssistantService);
 exports.AssistantService = AssistantService;
 //# sourceMappingURL=assistant.service.js.map

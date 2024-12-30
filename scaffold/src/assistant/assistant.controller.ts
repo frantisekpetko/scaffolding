@@ -1,17 +1,29 @@
+import fs from "fs";
+import { log } from "console";
+import { Logger } from "frontend/src/utils/logger";
+import { AssistantService } from "./assistant.service";
+
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { AssistantService } from './assistant.service';
+
 
 @Controller('assistant')
 export class AssistantController {
   constructor(private readonly assistantService: AssistantService) {}
+
+  @Get('logs')
+  getLogFile() {
+	let logsString = JSON.parse(fs.readFileSync('logs/app.log', 'utf8'));
+	return logsString;
+	//return logsStringArray.join('}');
+  }
 
   @Post('schema/recreate')
   recreateDatabaseSchema() {
